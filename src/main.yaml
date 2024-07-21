@@ -1,0 +1,27 @@
+openapi: 3.0.0
+info:
+    title: Future Frame API
+    description: The Futre Frame REST API. Please see https://futureframe.ai/docs/api-reference for more details.
+    version: "0.1.0"
+    termsOfService: https://futureframe.ai/policies/terms-of-use
+    contact:
+        name: Future Frame Support
+        url: https://futureframe.ai/contact
+        email: support@futureframe.ai
+    license:
+        name: MIT
+        url: https://github.com/futureframeai/ff-openapi/blob/master/LICENSE
+servers:
+    - url: https://futureframe.ai/api
+tags:
+    - name: Fine-tuning
+      description: Fine-tuning description
+security: []
+paths:
+  /finetuning:
+    $ref: "./paths/finetuning/launch_job.yaml"
+components:
+  responses:
+    $ref: "./responses/index.yaml"
+  schemas:
+    $ref: "./schemas/index.yaml"
