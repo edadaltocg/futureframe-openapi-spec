@@ -1,0 +1,29 @@
+tags:
+  - Models
+summary: Get a fine-tuned model by ID
+parameters:
+  - name: id
+    in: path
+    required: true
+    schema:
+      type: string
+      example: model_123456789abcdef
+responses:
+  '200':
+    description: Model retrieved successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            status:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+  '404':
+    description: Model not found

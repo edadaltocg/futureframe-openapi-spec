@@ -1,4 +1,4 @@
-description: Resource not found
+description: Authentication information is missing or invalid
 content:
   application/json:
     schema:

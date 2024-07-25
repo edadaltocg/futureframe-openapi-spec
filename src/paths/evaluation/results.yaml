@@ -1,0 +1,55 @@
+tags:
+  - Evaluation
+summary: Get evaluation results by ID
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []
+parameters:
+  - name: id
+    in: path
+    description: ID of the evaluation
+    required: true
+    schema:
+      type: string
+      example: eval_123456789abcdef
+responses:
+  '200':
+    description: Evaluation results retrieved successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+              example: eval_123456789abcdef
+            status:
+              type: string
+              example: completed
+            result:
+              type: object
+              properties:
+                accuracy:
+                  type: number
+                  format: float
+                  example: 0.95
+                precision:
+                  type: number
+                  format: float
+                  example: 0.92
+                recall:
+                  type: number
+                  format: float
+                  example: 0.90
+                f1_score:
+                  type: number
+                  format: float
+                  example: 0.91
+                additional_metrics:
+                  type: object
+                  additionalProperties:
+                    type: number
+                    format: float
+                    example: 0.85
+  '404':
+    description: Evaluation not found

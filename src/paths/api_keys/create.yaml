@@ -1,0 +1,27 @@
+tags:
+  - API Keys
+summary: Create a new API key
+requestBody:
+  description: Details for the new API key
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          name:
+            type: string
+            example: My API Key
+responses:
+  '201':
+    description: API key created successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            apiKey:
+              type: string
+              example: 123456789abcdef
+  '400':
+    description: Bad request

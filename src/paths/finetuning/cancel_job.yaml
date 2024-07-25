@@ -1,0 +1,27 @@
+summary: Cancel fine-tuning job
+description: Cancel a specific fine-tuning job.
+parameters:
+  - name: jobId
+    in: path
+    required: true
+    description: ID of the job to cancel
+    schema:
+      type: string
+      example: job_789
+responses:
+  '200':
+    JobCanceled:
+      description: Job canceled successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              jobId:
+                type: string
+                description: ID of the job
+                example: job_789
+              status:
+                type: string
+                description: Cancellation status
+                example: canceled

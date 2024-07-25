@@ -1,8 +1,8 @@
-operationId: createFineTuningJob
 tags:
-  - Fine-tuning
-summary: Launch a fine-tuning job
-description: Start a new fine-tuning job with the specified parameters.
+  - Evaluation
+operationId: evaluate
+summary: Evaluate a fine-tuned model
+description: Start a new evaluation.
 requestBody:
   required: true
   content:
@@ -14,21 +14,9 @@ requestBody:
             type: string
             description: ID of the model to fine-tune
             example: model_123
-          datasetId:
-            type: string
-            description: ID of the dataset to use for fine-tuning
-            example: dataset_456
-          hyperparameters:
-            type: object
-            description: Hyperparameters for the fine-tuning job
-            additionalProperties:
-              type: string
-            example:
-              learningRate: "0.001"
-              batchSize: "32"
 responses:
-  '201':
-    description: Fine-tuning job started successfully
+  '200':
+    description: Evaluation running
     content:
       application/json:
         schema:

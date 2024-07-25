@@ -1,0 +1,25 @@
+summary: Check API Health
+description: Returns the health status of the API.
+tags:
+  - Health
+responses:
+  '200':
+    description: Successful response indicating the API is healthy.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 200
+              description: HTTP status code
+            message:
+              type: string
+              example: API is healthy
+              description: A message indicating the health status
+          required:
+            - code
+            - message
+  '400':
+    description: Bad request

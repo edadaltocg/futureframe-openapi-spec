@@ -1,0 +1,15 @@
+tags:
+  - Models
+summary: Delete a fine-tuned model by ID
+parameters:
+  - name: id
+    in: path
+    required: true
+    schema:
+      type: string
+      example: model_123456789abcdef
+responses:
+  '204':
+    description: Model deleted successfully
+  '404':
+    description: Model not found

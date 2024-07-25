@@ -1,0 +1,15 @@
+tags:
+  - API Keys
+summary: Delete an API key by ID
+parameters:
+  - name: id
+    in: path
+    required: true
+    schema:
+      type: string
+      example: 123456789abcdef
+responses:
+  '204':
+    description: API key deleted successfully
+  '404':
+    description: API key not found

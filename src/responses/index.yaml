@@ -1,2 +1,10 @@
-NotFound:
+BadRequest:
+  $ref: "./400.yaml"
+UnauthorizedError:
+  $ref: "./401.yaml"
+ForbiddenError:
+  $ref: "./403.yaml"
+NotFoundError:
   $ref: "./404.yaml"
+UnexpectedError:
+  $ref: "./500.yaml"

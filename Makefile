@@ -3,9 +3,16 @@
 # Pull necessary Docker images
 setup:
 	docker pull redocly/cli
+	go install github.com/google/yamlfmt/cmd/yamlfmt@latest
+	brew install yamllint
+
+# Format the OpenAPI specification
+fmt:
+	yamlfmt src/
 
 # Lint the OpenAPI specification
 test:
+	yamllint -d relaxed src/
 	docker run --rm \
 		-v ./src:/spec \
 		redocly/cli lint /spec/main.yaml

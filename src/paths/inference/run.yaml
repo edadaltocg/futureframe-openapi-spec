@@ -1,0 +1,34 @@
+tags:
+  - Inference
+description: Predictions entry point to get inference using default model version.
+summary: Predictions entry point to get inference using default model version.
+operationId: predictions
+parameters:
+  - in: path
+    name: model_name
+    description: Name of model.
+    required: true
+    schema:
+      type: string
+requestBody:
+  description: Input data format is defined by each model.
+  content:
+    "*/*":
+      schema:
+        type: string
+        format: binary
+  required: true
+responses:
+  '200':
+    description: Output data format is defined by each model.
+    content:
+      "*/*":
+        schema:
+          type: string
+          format: binary
+  '404':
+    $ref: '../../responses/404.yaml'
+  '500':
+    $ref: '../../responses/500.yaml'
+  '503':
+    $ref: '../../responses/503.yaml'

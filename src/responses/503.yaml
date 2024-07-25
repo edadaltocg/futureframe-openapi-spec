@@ -1,4 +1,4 @@
-description: Resource not found
+description: No worker is available to serve request
 content:
   application/json:
     schema:

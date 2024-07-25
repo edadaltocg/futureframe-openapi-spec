@@ -1,27 +1,67 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-    title: Future Frame API
-    description: The Futre Frame REST API. Please see https://futureframe.ai/docs/api-reference for more details.
-    version: "0.1.0"
-    termsOfService: https://futureframe.ai/policies/terms-of-use
-    contact:
-        name: Future Frame Support
-        url: https://futureframe.ai/contact
-        email: support@futureframe.ai
-    license:
-        name: MIT
-        url: https://github.com/futureframeai/ff-openapi/blob/master/LICENSE
+  title: Future Frame API
+  description: The Futre Frame REST API documentation.
+  version: "0.1.0"
+  termsOfService: https://futureframe.ai/policies/terms-of-use
+  contact:
+    name: Future Frame Support
+    url: https://futureframe.ai/contact
+    email: support@futureframe.ai
+  license:
+    name: MIT
+    url: https://github.com/futureframeai/ff-openapi/blob/master/LICENSE
 servers:
-    - url: https://futureframe.ai/api
+  - url: https://futureframe.ai/api
 tags:
-    - name: Fine-tuning
-      description: Fine-tuning description
-security: []
+  - name: Fine-tuning
+    description: Fine-tuning description
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []
 paths:
+  /api-keys:
+    post:
+      $ref: "./paths/api_keys/create.yaml"
+  /api-keys/{id}:
+    delete:
+      $ref: "./paths/api_keys/delete.yaml"
+  /pretrained-models:
+    get:
+      $ref: "./paths/pretrained_models/list.yaml"
+  /pretrained-models/{id}:
+    get:
+      $ref: "./paths/pretrained_models/model_details.yaml"
   /finetuning:
-    $ref: "./paths/finetuning/launch_job.yaml"
+    post:
+      $ref: "./paths/finetuning/launch_job.yaml"
+  /evaluation:
+    post:
+      $ref: "./paths/evaluation/run.yaml"
+  /evaluation/{id}:
+    get:
+      $ref: "./paths/evaluation/results.yaml"
+  /inference/{model_name}:
+    post:
+      $ref: "./paths/inference/run.yaml"
+  /models:
+    get:
+      $ref: "./paths/finetuned_models/list.yaml"
+  /models/{id}:
+    get:
+      $ref: "./paths/finetuned_models/model_details.yaml"
+    delete:
+      $ref: "./paths/finetuned_models/delete_model.yaml"
+  /usage:
+    get:
+      $ref: "./paths/usage/get.yaml"
+  /health:
+    get:
+      $ref: "./paths/health/get.yaml"
 components:
   responses:
     $ref: "./responses/index.yaml"
   schemas:
     $ref: "./schemas/index.yaml"
+  securitySchemes:
+    $ref: "./schemas/security.yaml"

@@ -1,4 +1,4 @@
-description: Resource not found
+description: Access forbidden
 content:
   application/json:
     schema:

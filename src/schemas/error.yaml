@@ -1,10 +1,13 @@
 type: object
-required:
-  - code
-  - message
 properties:
   code:
     type: integer
-    format: int32
+    example: 500
+    description: HTTP status code
   message:
     type: string
+    example: Internal server error
+    description: A message indicating the error
+required:
+  - code
+  - message

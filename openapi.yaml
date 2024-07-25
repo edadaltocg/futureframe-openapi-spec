@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
   title: Future Frame API
   description: The Futre Frame REST API. Please see https://futureframe.ai/docs/api-reference for more details.
@@ -13,11 +13,143 @@ info:
     url: https://github.com/futureframeai/ff-openapi/blob/master/LICENSE
 servers:
   - url: https://futureframe.ai/api
-security: []
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []
 tags:
   - name: Fine-tuning
     description: Fine-tuning description
 paths:
+  /api-keys:
+    post:
+      tags:
+        - API Keys
+      summary: Create a new API key
+      requestBody:
+        description: Details for the new API key
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: My API Key
+      responses:
+        '201':
+          description: API key created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  apiKey:
+                    type: string
+                    example: 123456789abcdef
+        '400':
+          description: Bad request
+  /api-keys/{id}:
+    delete:
+      tags:
+        - API Keys
+      summary: Delete an API key by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 123456789abcdef
+      responses:
+        '204':
+          description: API key deleted successfully
+        '404':
+          description: API key not found
+  /pretrained-models:
+    get:
+      tags:
+        - Models
+      summary: Get a list of fine-tuned models
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of models to return
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+        - name: offset
+          in: query
+          description: Number of models to skip before starting to collect the result set
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: List of models retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 100
+                  models:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: model_123456789abcdef
+                        name:
+                          type: string
+                          example: My Fine-tuned Model
+                        status:
+                          type: string
+                          example: completed
+                        createdAt:
+                          type: string
+                          format: date-time
+        '400':
+          description: Bad request
+  /pretrained-models/{id}:
+    get:
+      tags:
+        - Pretrained Models
+      summary: Get a pretrained model by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: model_123456789abcdef
+      responses:
+        '200':
+          description: Model retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  status:
+                    type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+        '404':
+          description: Model not found
   /finetuning:
     post:
       operationId: createFineTuningJob
@@ -60,46 +192,400 @@ paths:
                     type: string
                     description: ID of the created job
                     example: job_789
-        '404':
-          description: Resource not found
+        '400':
+          description: Invalid input parameters
           content: &ref_2
             application/json:
               schema:
                 type: object
-                required: &ref_0
-                  - code
-                  - message
-                properties: &ref_1
+                properties: &ref_0
                   code:
                     type: integer
-                    format: int32
+                    example: 500
+                    description: HTTP status code
                   message:
                     type: string
-        '500':
-          description: Internal server error
+                    example: Internal server error
+                    description: A message indicating the error
+                required: &ref_1
+                  - code
+                  - message
+        '401':
+          description: Authentication information is missing or invalid
           content: &ref_3
             application/json:
               schema:
                 type: object
-                required: *ref_0
-                properties: *ref_1
+                properties: *ref_0
+                required: *ref_1
+        '403':
+          description: Access forbidden
+          content: &ref_4
+            application/json:
+              schema:
+                type: object
+                properties: *ref_0
+                required: *ref_1
+        '404':
+          description: Resource not found
+          content: &ref_5
+            application/json:
+              schema:
+                type: object
+                properties: *ref_0
+                required: *ref_1
+        '500':
+          description: Internal server error
+          content: &ref_6
+            application/json:
+              schema:
+                type: object
+                properties: *ref_0
+                required: *ref_1
+  /evaluation:
+    post:
+      tags:
+        - Evaluation
+      operationId: evaluate
+      summary: Evaluate a fine-tuned model
+      description: Start a new evaluation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                modelId:
+                  type: string
+                  description: ID of the model to fine-tune
+                  example: model_123
+      responses:
+        '200':
+          description: Evaluation running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobId:
+                    type: string
+                    description: ID of the created job
+                    example: job_789
+        '400':
+          description: Invalid input parameters
+          content: *ref_2
+        '401':
+          description: Authentication information is missing or invalid
+          content: *ref_3
+        '403':
+          description: Access forbidden
+          content: *ref_4
+        '404':
+          description: Resource not found
+          content: *ref_5
+        '500':
+          description: Internal server error
+          content: *ref_6
+  /evaluation/{id}:
+    get:
+      tags:
+        - Evaluation
+      summary: Get evaluation results by ID
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the evaluation
+          required: true
+          schema:
+            type: string
+            example: eval_123456789abcdef
+      responses:
+        '200':
+          description: Evaluation results retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: eval_123456789abcdef
+                  status:
+                    type: string
+                    example: completed
+                  result:
+                    type: object
+                    properties:
+                      accuracy:
+                        type: number
+                        format: float
+                        example: 0.95
+                      precision:
+                        type: number
+                        format: float
+                        example: 0.92
+                      recall:
+                        type: number
+                        format: float
+                        example: 0.9
+                      f1_score:
+                        type: number
+                        format: float
+                        example: 0.91
+                      additional_metrics:
+                        type: object
+                        additionalProperties:
+                          type: number
+                          format: float
+                          example: 0.85
+        '404':
+          description: Evaluation not found
+  /inference/{model_name}:
+    post:
+      tags:
+        - Inference
+      description: Predictions entry point to get inference using default model version.
+      summary: Predictions entry point to get inference using default model version.
+      operationId: predictions
+      parameters:
+        - in: path
+          name: model_name
+          description: Name of model.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Input data format is defined by each model.
+        content:
+          '*/*':
+            schema:
+              type: string
+              format: binary
+        required: true
+      responses:
+        '200':
+          description: Output data format is defined by each model.
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Resource not found
+          content: *ref_5
+        '500':
+          description: Internal server error
+          content: *ref_6
+        '503':
+          description: No worker is available to serve request
+          content: &ref_7
+            application/json:
+              schema:
+                type: object
+                properties: *ref_0
+                required: *ref_1
+  /models:
+    get:
+      tags:
+        - Models
+      summary: Get a list of fine-tuned models
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of models to return
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+        - name: offset
+          in: query
+          description: Number of models to skip before starting to collect the result set
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: List of models retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 100
+                  models:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: model_123456789abcdef
+                        name:
+                          type: string
+                          example: My Fine-tuned Model
+                        status:
+                          type: string
+                          example: completed
+                        createdAt:
+                          type: string
+                          format: date-time
+        '400':
+          description: Bad request
+  /models/{id}:
+    get:
+      tags:
+        - Models
+      summary: Get a fine-tuned model by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: model_123456789abcdef
+      responses:
+        '200':
+          description: Model retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  status:
+                    type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+        '404':
+          description: Model not found
+    delete:
+      tags:
+        - Models
+      summary: Delete a fine-tuned model by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: model_123456789abcdef
+      responses:
+        '204':
+          description: Model deleted successfully
+        '404':
+          description: Model not found
+  /usage:
+    get:
+      tags:
+        - Usage
+      summary: Get usage information
+      responses:
+        '200':
+          description: Usage information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_credits:
+                    type: integer
+                    example: 1000
+                  used_credits:
+                    type: integer
+                    example: 150
+        '401':
+          description: Unauthorized
+  /health:
+    get:
+      summary: Check API Health
+      description: Returns the health status of the API.
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Successful response indicating the API is healthy.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                    description: HTTP status code
+                  message:
+                    type: string
+                    example: API is healthy
+                    description: A message indicating the health status
+                required:
+                  - code
+                  - message
+        '400':
+          description: Bad request
 components:
   responses:
+    '400':
+      description: Invalid input parameters
+      content: *ref_2
+    '401':
+      description: Authentication information is missing or invalid
+      content: *ref_3
+    '403':
+      description: Access forbidden
+      content: *ref_4
     '404':
       description: Resource not found
-      content: *ref_2
+      content: *ref_5
     '500':
       description: Internal server error
-      content: *ref_3
-    NotFound:
-      description: Resource not found
+      content: *ref_6
+    '503':
+      description: No worker is available to serve request
+      content: *ref_7
+    BadRequest:
+      description: Invalid input parameters
       content: *ref_2
+    UnauthorizedError:
+      description: Authentication information is missing or invalid
+      content: *ref_3
+    ForbiddenError:
+      description: Access forbidden
+      content: *ref_4
+    NotFoundError:
+      description: Resource not found
+      content: *ref_5
+    UnexpectedError:
+      description: Internal server error
+      content: *ref_6
   schemas:
     error:
       type: object
-      required: *ref_0
-      properties: *ref_1
+      properties: *ref_0
+      required: *ref_1
     Error:
       type: object
-      required: *ref_0
-      properties: *ref_1
+      properties: *ref_0
+      required: *ref_1
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      name: api_key
+      in: query
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
