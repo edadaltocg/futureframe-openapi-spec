@@ -14,8 +14,22 @@ info:
 servers:
   - url: https://futureframe.ai/api
 tags:
+  - name: API Keys
+    description: Details
+  - name: Pre-trained Models
+    description: Details
   - name: Fine-tuning
     description: Fine-tuning description
+  - name: Evaluation
+    description: Details
+  - name: Inference
+    description: Details
+  - name: Fine-tuned Models
+    description: Details
+  - name: Usage
+    description: Details
+  - name: Health
+    description: Details
 security:
   - ApiKeyAuth: []
   - BearerAuth: []

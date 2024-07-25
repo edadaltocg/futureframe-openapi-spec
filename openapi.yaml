@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Future Frame API
-  description: The Futre Frame REST API. Please see https://futureframe.ai/docs/api-reference for more details.
+  description: The Futre Frame REST API documentation.
   version: 0.1.0
   termsOfService: https://futureframe.ai/policies/terms-of-use
   contact:
@@ -17,8 +17,22 @@ security:
   - ApiKeyAuth: []
   - BearerAuth: []
 tags:
+  - name: API Keys
+    description: Details
+  - name: Pre-trained Models
+    description: Details
   - name: Fine-tuning
     description: Fine-tuning description
+  - name: Evaluation
+    description: Details
+  - name: Inference
+    description: Details
+  - name: Fine-tuned Models
+    description: Details
+  - name: Usage
+    description: Details
+  - name: Health
+    description: Details
 paths:
   /api-keys:
     post:
@@ -69,8 +83,8 @@ paths:
   /pretrained-models:
     get:
       tags:
-        - Models
-      summary: Get a list of fine-tuned models
+        - Pre-trained Models
+      summary: Get a list of pre-trained models
       parameters:
         - name: limit
           in: query
@@ -122,7 +136,7 @@ paths:
   /pretrained-models/{id}:
     get:
       tags:
-        - Pretrained Models
+        - Pre-trained Models
       summary: Get a pretrained model by ID
       parameters:
         - name: id
@@ -193,55 +207,15 @@ paths:
                     description: ID of the created job
                     example: job_789
         '400':
-          description: Invalid input parameters
-          content: &ref_2
-            application/json:
-              schema:
-                type: object
-                properties: &ref_0
-                  code:
-                    type: integer
-                    example: 500
-                    description: HTTP status code
-                  message:
-                    type: string
-                    example: Internal server error
-                    description: A message indicating the error
-                required: &ref_1
-                  - code
-                  - message
+          $ref: '#/components/responses/400'
         '401':
-          description: Authentication information is missing or invalid
-          content: &ref_3
-            application/json:
-              schema:
-                type: object
-                properties: *ref_0
-                required: *ref_1
+          $ref: '#/components/responses/401'
         '403':
-          description: Access forbidden
-          content: &ref_4
-            application/json:
-              schema:
-                type: object
-                properties: *ref_0
-                required: *ref_1
+          $ref: '#/components/responses/403'
         '404':
-          description: Resource not found
-          content: &ref_5
-            application/json:
-              schema:
-                type: object
-                properties: *ref_0
-                required: *ref_1
+          $ref: '#/components/responses/404'
         '500':
-          description: Internal server error
-          content: &ref_6
-            application/json:
-              schema:
-                type: object
-                properties: *ref_0
-                required: *ref_1
+          $ref: '#/components/responses/500'
   /evaluation:
     post:
       tags:
@@ -273,20 +247,15 @@ paths:
                     description: ID of the created job
                     example: job_789
         '400':
-          description: Invalid input parameters
-          content: *ref_2
+          $ref: '#/components/responses/400'
         '401':
-          description: Authentication information is missing or invalid
-          content: *ref_3
+          $ref: '#/components/responses/401'
         '403':
-          description: Access forbidden
-          content: *ref_4
+          $ref: '#/components/responses/403'
         '404':
-          description: Resource not found
-          content: *ref_5
+          $ref: '#/components/responses/404'
         '500':
-          description: Internal server error
-          content: *ref_6
+          $ref: '#/components/responses/500'
   /evaluation/{id}:
     get:
       tags:
@@ -375,23 +344,15 @@ paths:
                 type: string
                 format: binary
         '404':
-          description: Resource not found
-          content: *ref_5
+          $ref: '#/components/responses/404'
         '500':
-          description: Internal server error
-          content: *ref_6
+          $ref: '#/components/responses/500'
         '503':
-          description: No worker is available to serve request
-          content: &ref_7
-            application/json:
-              schema:
-                type: object
-                properties: *ref_0
-                required: *ref_1
+          $ref: '#/components/responses/503'
   /models:
     get:
       tags:
-        - Models
+        - Fine-tuned Models
       summary: Get a list of fine-tuned models
       parameters:
         - name: limit
@@ -444,7 +405,7 @@ paths:
   /models/{id}:
     get:
       tags:
-        - Models
+        - Fine-tuned Models
       summary: Get a fine-tuned model by ID
       parameters:
         - name: id
@@ -474,7 +435,7 @@ paths:
           description: Model not found
     delete:
       tags:
-        - Models
+        - Fine-tuned Models
       summary: Delete a fine-tuned model by ID
       parameters:
         - name: id
@@ -540,46 +501,67 @@ components:
   responses:
     '400':
       description: Invalid input parameters
-      content: *ref_2
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     '401':
       description: Authentication information is missing or invalid
-      content: *ref_3
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     '403':
       description: Access forbidden
-      content: *ref_4
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     '404':
       description: Resource not found
-      content: *ref_5
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     '500':
       description: Internal server error
-      content: *ref_6
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     '503':
       description: No worker is available to serve request
-      content: *ref_7
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     BadRequest:
-      description: Invalid input parameters
-      content: *ref_2
+      $ref: '#/components/responses/400'
     UnauthorizedError:
-      description: Authentication information is missing or invalid
-      content: *ref_3
+      $ref: '#/components/responses/401'
     ForbiddenError:
-      description: Access forbidden
-      content: *ref_4
+      $ref: '#/components/responses/403'
     NotFoundError:
-      description: Resource not found
-      content: *ref_5
+      $ref: '#/components/responses/404'
     UnexpectedError:
-      description: Internal server error
-      content: *ref_6
+      $ref: '#/components/responses/500'
   schemas:
     error:
       type: object
-      properties: *ref_0
-      required: *ref_1
+      properties:
+        code:
+          type: integer
+          example: 500
+          description: HTTP status code
+        message:
+          type: string
+          example: Internal server error
+          description: A message indicating the error
+      required:
+        - code
+        - message
     Error:
-      type: object
-      properties: *ref_0
-      required: *ref_1
+      $ref: '#/components/schemas/error'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

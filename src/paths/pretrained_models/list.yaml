@@ -1,6 +1,6 @@
 tags:
-  - Models
-summary: Get a list of fine-tuned models
+  - Pre-trained Models
+summary: Get a list of pre-trained models
 parameters:
   - name: limit
     in: query

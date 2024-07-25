@@ -22,7 +22,7 @@ compile:
 	docker run --rm \
 		-v ./src:/spec \
 		-v ./:/build \
-		redocly/cli bundle --dereferenced --output /build/openapi.yaml --ext yaml /spec/main.yaml
+		redocly/cli bundle --output /build/openapi.yaml --ext yaml /spec/main.yaml
 
 # Build the HTML documentation from the OpenAPI spec
 build: compile
