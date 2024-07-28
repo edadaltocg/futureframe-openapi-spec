@@ -4,24 +4,30 @@ summary: Check fine-tuning job status
 description: Retrieve the status of a specific fine-tuning job
 operationId: finetuning_results
 parameters:
-  - name: id
+  - name: job_id
     in: path
     required: true
     description: ID of the job to check
     schema:
       type: string
-      example: ff-job-789
+      example: ff-finetuning-job-1
 responses:
   '200':
-    description: fine-tuning results retrieved successfully
+    description: Fine-tuning results retrieved successfully
     content:
       application/json:
         schema:
           type: object
           properties:
-            id:
+            job_id:
               type: string
-              example: eval_123456789abcdef
+              example: ff-finetuning-job-1
+            model_name:
+              type: string
+              example: model_name
+            ff_model_id:
+              type: string
+              example: ff-zero
             status:
               type: string
               example: completed
@@ -32,6 +38,10 @@ responses:
                   type: number
                   format: float
                   example: 0.95
+                auc:
+                  type: number
+                  format: float
+                  example: 0.90
                 precision:
                   type: number
                   format: float
@@ -44,6 +54,32 @@ responses:
                   type: number
                   format: float
                   example: 0.91
+  '201':
+    description: Fine-tuning job created
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+              example: ff-finetuning-job-1
+            status:
+              type: string
+              example: pending
+  '202':
+    description: Fine-tuning job running
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+              example: ff-finetuning-job-1
+            status:
+              type: string
+              example: running
   '403':
     $ref: '../../responses/403.yaml'
   '404':

@@ -1,8 +1,8 @@
-openapi: 3.0.3
+openapi: 3.0.3main
 info:
-  title: Future Frame API
+  title: Future Frame API Reference
   description: The Futre Frame REST API documentation.
-  version: "0.1.1"
+  version: "0.1.3"
   # termsOfService: https://futureframe.ai/policies/terms-of-use
   contact:
     name: Future Frame Support
@@ -14,21 +14,21 @@ servers:
   - url: https://futureframe.ai/api
 tags:
   - name: API Keys
-    description: Details
+    description: Endpoints for managing and authenticating API keys.
   - name: Pre-trained Models
-    description: Details
+    description: Endpoints for retrieving pre-trained models available for fine-tuning.
   - name: Fine-tuning
-    description: Fine-tuning description
+    description: Endpoints for initiating the fine-tuning process on pre-trained models.
   - name: Evaluation
-    description: Details
+    description: Endpoints for evaluating the performance of fine-tuned models on specified datasets.
   - name: Inference
-    description: Details
+    description: Endpoints for making predictions using fine-tuned models.
   - name: Fine-tuned Models
-    description: Details
+    description: Endpoints for accessing and managing models that have been fine-tuned.
   - name: Usage
-    description: Details
+    description: Endpoints for monitoring usage statistics and quotas.
   - name: Health
-    description: Details
+    description: Endpoints for checking the health and status of the API service.
 security:
   - ApiKeyAuth: []
 paths:
@@ -47,13 +47,17 @@ paths:
   /finetuning:
     post:
       $ref: "./paths/finetuning/launch_job.yaml"
-  /finetuning/{id}:
+    get:
+      $ref: "./paths/finetuning/list.yaml"
+  /finetuning/{job_id}:
     get:
       $ref: "./paths/finetuning/results.yaml"
   /evaluation:
     post:
       $ref: "./paths/evaluation/run.yaml"
-  /evaluation/{id}:
+    get:
+      $ref: "./paths/evaluation/list.yaml"
+  /evaluation/{job_id}:
     get:
       $ref: "./paths/evaluation/results.yaml"
   /inference/{model_name}:
@@ -74,7 +78,5 @@ paths:
     get:
       $ref: "./paths/health/get.yaml"
 components:
-  responses:
-    $ref: "./responses/index.yaml"
   securitySchemes:
     $ref: "./schemas/security.yaml"

@@ -1,4 +1,4 @@
-operationId: createFineTuningJob
+operationId: create_fine_tuning_job
 tags:
   - Fine-tuning
 description: Upload a CSV file along with a model name to fine-tune the specified model
@@ -16,13 +16,16 @@ requestBody:
           file:
             type: string
             format: binary
-            description: The CSV file containing the training data.
+            description: The CSV file containing the training data
           model_name:
             type: string
-            description: The name of the model to be available for inference.
+            description: The name of the model to be available for inference
+          ff_model_id:
+            type: string
+            description: The ID of the pre-trained model to be fine-tuned
 responses:
   '201':
-    description: Fine-tuning job started successfully
+    description: Fine-tuning job created successfully
     content:
       application/json:
         schema:
@@ -32,9 +35,16 @@ responses:
               type: string
               description: ID of the created job
               example: ff-finetuning-job-1
+            model_name:
+              type: string
+              description: The name of the model to be available for inference
+              example: model_name
+            status:
+              type: string
+              example: pending
             message:
               type: string
-              example: Model fine-tuning started successfully.
+              example: Fine-tuning job created successfully
   '400':
     $ref: '../../responses/400.yaml'
   '403':

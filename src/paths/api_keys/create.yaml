@@ -1,6 +1,7 @@
 tags:
   - API Keys
-summary: Create a new API key
+summary: Create API key
+description: Create a new API key
 operationId: create_api_key
 security:
   - BearerAuth: []

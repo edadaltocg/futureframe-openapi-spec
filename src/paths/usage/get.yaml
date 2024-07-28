@@ -1,6 +1,7 @@
 tags:
   - Usage
-summary: Get usage information
+summary: Usage information
+description: Get usage information
 operationId: usage
 responses:
   '200':
@@ -12,10 +13,10 @@ responses:
           properties:
             total_credits:
               type: integer
-              example: 1000
+              example: 100000
             used_credits:
               type: integer
-              example: 150
+              example: 15000
   '403':
     $ref: '../../responses/403.yaml'
   '500':

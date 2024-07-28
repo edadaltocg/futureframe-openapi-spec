@@ -1,18 +1,16 @@
 tags:
   - Evaluation
-summary: Get evaluation results by ID
-operationId: evaluarion_results
-security:
-  - ApiKeyAuth: []
-  - BearerAuth: []
+summary: Get evaluation results
+description: Get evaluation results by job ID
+operationId: evaluation_results
 parameters:
-  - name: id
+  - name: job_id
     in: path
-    description: ID of the evaluation
+    description: ID of the evaluation job
     required: true
     schema:
       type: string
-      example: eval_123456789abcdef
+      example: ff-eval-job-1
 responses:
   '200':
     description: Evaluation results retrieved successfully
@@ -21,9 +19,9 @@ responses:
         schema:
           type: object
           properties:
-            id:
+            job_id:
               type: string
-              example: ff-eval-123456789abcdef
+              example: ff-eval-job-1
             status:
               type: string
               example: completed
@@ -46,12 +44,32 @@ responses:
                   type: number
                   format: float
                   example: 0.91
-                additional_metrics:
-                  type: object
-                  additionalProperties:
-                    type: number
-                    format: float
-                    example: 0.85
+  '201':
+    description: Evaluation job created
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+              example: ff-eval-job-1
+            status:
+              type: string
+              example: pending
+  '202':
+    description: Evaluation job running
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+              example: ff-eval-job-1
+            status:
+              type: string
+              example: running
   '403':
     $ref: '../../responses/403.yaml'
   '404':

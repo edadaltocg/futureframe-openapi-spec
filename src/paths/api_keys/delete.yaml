@@ -1,6 +1,7 @@
 tags:
   - API Keys
-summary: Delete an API key by value
+summary: Delete API key
+description: Delete an API key by value
 operationId: delete_api_key
 parameters:
   - name: id

@@ -1,8 +1,8 @@
-openapi: 3.0.3
+openapi: 3.0.3main
 info:
-  title: Future Frame API
+  title: Future Frame API Reference
   description: The Futre Frame REST API documentation.
-  version: 0.1.1
+  version: 0.1.3
   contact:
     name: Future Frame Support
     email: support@futureframe.ai
@@ -15,27 +15,28 @@ security:
   - ApiKeyAuth: []
 tags:
   - name: API Keys
-    description: Details
+    description: Endpoints for managing and authenticating API keys.
   - name: Pre-trained Models
-    description: Details
+    description: Endpoints for retrieving pre-trained models available for fine-tuning.
   - name: Fine-tuning
-    description: Fine-tuning description
+    description: Endpoints for initiating the fine-tuning process on pre-trained models.
   - name: Evaluation
-    description: Details
+    description: Endpoints for evaluating the performance of fine-tuned models on specified datasets.
   - name: Inference
-    description: Details
+    description: Endpoints for making predictions using fine-tuned models.
   - name: Fine-tuned Models
-    description: Details
+    description: Endpoints for accessing and managing models that have been fine-tuned.
   - name: Usage
-    description: Details
+    description: Endpoints for monitoring usage statistics and quotas.
   - name: Health
-    description: Details
+    description: Endpoints for checking the health and status of the API service.
 paths:
   /api-keys:
     post:
       tags:
         - API Keys
-      summary: Create a new API key
+      summary: Create API key
+      description: Create a new API key
       operationId: create_api_key
       security:
         - BearerAuth: []
@@ -71,7 +72,8 @@ paths:
     delete:
       tags:
         - API Keys
-      summary: Delete an API key by value
+      summary: Delete API key
+      description: Delete an API key by value
       operationId: delete_api_key
       parameters:
         - name: id
@@ -112,24 +114,6 @@ paths:
       summary: Get a list of pre-trained models
       operationId: pretrained_models
       security: []
-      parameters:
-        - name: limit
-          in: query
-          description: Maximum number of models to return
-          required: false
-          schema:
-            type: integer
-            default: 10
-            minimum: 1
-            maximum: 100
-        - name: offset
-          in: query
-          description: Number of models to skip before starting to collect the result set
-          required: false
-          schema:
-            type: integer
-            default: 0
-            minimum: 0
       responses:
         '200':
           description: List of models retrieved successfully
@@ -161,7 +145,7 @@ paths:
           $ref: '#/components/responses/500'
   /finetuning:
     post:
-      operationId: createFineTuningJob
+      operationId: create_fine_tuning_job
       tags:
         - Fine-tuning
       description: Upload a CSV file along with a model name to fine-tune the specified model
@@ -179,13 +163,16 @@ paths:
                 file:
                   type: string
                   format: binary
-                  description: The CSV file containing the training data.
+                  description: The CSV file containing the training data
                 model_name:
                   type: string
-                  description: The name of the model to be available for inference.
+                  description: The name of the model to be available for inference
+                ff_model_id:
+                  type: string
+                  description: The ID of the pre-trained model to be fine-tuned
       responses:
         '201':
-          description: Fine-tuning job started successfully
+          description: Fine-tuning job created successfully
           content:
             application/json:
               schema:
@@ -195,16 +182,61 @@ paths:
                     type: string
                     description: ID of the created job
                     example: ff-finetuning-job-1
+                  model_name:
+                    type: string
+                    description: The name of the model to be available for inference
+                    example: model_name
+                  status:
+                    type: string
+                    example: pending
                   message:
                     type: string
-                    example: Model fine-tuning started successfully.
+                    example: Fine-tuning job created successfully
         '400':
           $ref: '#/components/responses/400'
         '403':
           $ref: '#/components/responses/403'
         '500':
           $ref: '#/components/responses/500'
-  /finetuning/{id}:
+    get:
+      operationId: list_fine_tuning_job
+      tags:
+        - Fine-tuning
+      summary: List fine-tuning jobs
+      description: Get a list of fine-tuning jobs
+      responses:
+        '200':
+          description: List of fine-tuning jobs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 1
+                  jobs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        job_id:
+                          type: string
+                          example: ff-finetuning-job-1
+                        model_name:
+                          type: string
+                          example: model_name
+                        status:
+                          type: string
+                          example: completed
+                        created_at:
+                          type: string
+                          format: date-time
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+  /finetuning/{job_id}:
     get:
       tags:
         - Fine-tuning
@@ -212,24 +244,30 @@ paths:
       description: Retrieve the status of a specific fine-tuning job
       operationId: finetuning_results
       parameters:
-        - name: id
+        - name: job_id
           in: path
           required: true
           description: ID of the job to check
           schema:
             type: string
-            example: ff-job-789
+            example: ff-finetuning-job-1
       responses:
         '200':
-          description: fine-tuning results retrieved successfully
+          description: Fine-tuning results retrieved successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  id:
+                  job_id:
                     type: string
-                    example: eval_123456789abcdef
+                    example: ff-finetuning-job-1
+                  model_name:
+                    type: string
+                    example: model_name
+                  ff_model_id:
+                    type: string
+                    example: ff-zero
                   status:
                     type: string
                     example: completed
@@ -240,6 +278,10 @@ paths:
                         type: number
                         format: float
                         example: 0.95
+                      auc:
+                        type: number
+                        format: float
+                        example: 0.9
                       precision:
                         type: number
                         format: float
@@ -252,6 +294,32 @@ paths:
                         type: number
                         format: float
                         example: 0.91
+        '201':
+          description: Fine-tuning job created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: ff-finetuning-job-1
+                  status:
+                    type: string
+                    example: pending
+        '202':
+          description: Fine-tuning job running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: ff-finetuning-job-1
+                  status:
+                    type: string
+                    example: running
         '403':
           $ref: '#/components/responses/403'
         '404':
@@ -279,13 +347,13 @@ paths:
                   type: string
                   format: binary
                   description: The CSV file containing the evaluation data
-                model_id:
+                model_name:
                   type: string
                   description: ID of the model to fine-tune
                   example: model_123
       responses:
-        '200':
-          description: Evaluation running
+        '201':
+          description: Evaluation job created successfully
           content:
             application/json:
               schema:
@@ -294,7 +362,17 @@ paths:
                   job_id:
                     type: string
                     description: ID of the created job
-                    example: ff-job_789
+                    example: ff-eval-job-1
+                  model_name:
+                    type: string
+                    description: The name of the model
+                    example: model_name
+                  status:
+                    type: string
+                    example: pending
+                  message:
+                    type: string
+                    example: Evaluation job created successfully
         '400':
           $ref: '#/components/responses/400'
         '403':
@@ -303,23 +381,59 @@ paths:
           $ref: '#/components/responses/404'
         '500':
           $ref: '#/components/responses/500'
-  /evaluation/{id}:
+    get:
+      operationId: list_eval_job
+      tags:
+        - Evaluation
+      summary: List evaluation jobs
+      description: Get a list of evaluation jobs
+      responses:
+        '200':
+          description: List of evaluation jobs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 1
+                  jobs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        job_id:
+                          type: string
+                          example: ff-eval-job-1
+                        model_name:
+                          type: string
+                          example: model_name
+                        status:
+                          type: string
+                          example: completed
+                        created_at:
+                          type: string
+                          format: date-time
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+  /evaluation/{job_id}:
     get:
       tags:
         - Evaluation
-      summary: Get evaluation results by ID
-      operationId: evaluarion_results
-      security:
-        - ApiKeyAuth: []
-        - BearerAuth: []
+      summary: Get evaluation results
+      description: Get evaluation results by job ID
+      operationId: evaluation_results
       parameters:
-        - name: id
+        - name: job_id
           in: path
-          description: ID of the evaluation
+          description: ID of the evaluation job
           required: true
           schema:
             type: string
-            example: eval_123456789abcdef
+            example: ff-eval-job-1
       responses:
         '200':
           description: Evaluation results retrieved successfully
@@ -328,9 +442,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
+                  job_id:
                     type: string
-                    example: ff-eval-123456789abcdef
+                    example: ff-eval-job-1
                   status:
                     type: string
                     example: completed
@@ -353,12 +467,32 @@ paths:
                         type: number
                         format: float
                         example: 0.91
-                      additional_metrics:
-                        type: object
-                        additionalProperties:
-                          type: number
-                          format: float
-                          example: 0.85
+        '201':
+          description: Evaluation job created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: ff-eval-job-1
+                  status:
+                    type: string
+                    example: pending
+        '202':
+          description: Evaluation job running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: ff-eval-job-1
+                  status:
+                    type: string
+                    example: running
         '403':
           $ref: '#/components/responses/403'
         '404':
@@ -530,7 +664,8 @@ paths:
     get:
       tags:
         - Usage
-      summary: Get usage information
+      summary: Usage information
+      description: Get usage information
       operationId: usage
       responses:
         '200':
@@ -542,10 +677,10 @@ paths:
                 properties:
                   total_credits:
                     type: integer
-                    example: 1000
+                    example: 100000
                   used_credits:
                     type: integer
-                    example: 150
+                    example: 15000
         '403':
           $ref: '#/components/responses/403'
         '500':
@@ -572,7 +707,7 @@ paths:
                     description: HTTP status code
                   message:
                     type: string
-                    example: API is healthy
+                    example: OK
                     description: A message indicating the health status
                 required:
                   - code
@@ -580,6 +715,15 @@ paths:
         '500':
           $ref: '#/components/responses/500'
 components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      name: api_key
+      in: query
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   responses:
     '400':
       description: Invalid input parameters
@@ -653,20 +797,3 @@ components:
             required:
               - code
               - message
-    BadRequest:
-      $ref: '#/components/responses/400'
-    ForbiddenError:
-      $ref: '#/components/responses/403'
-    NotFoundError:
-      $ref: '#/components/responses/404'
-    UnexpectedError:
-      $ref: '#/components/responses/500'
-  securitySchemes:
-    ApiKeyAuth:
-      type: apiKey
-      name: api_key
-      in: query
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT

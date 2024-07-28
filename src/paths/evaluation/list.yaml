@@ -1,0 +1,37 @@
+operationId: list_eval_job
+tags:
+  - Evaluation
+summary: List evaluation jobs
+description: Get a list of evaluation jobs
+responses:
+  '200':
+    description: List of evaluation jobs retrieved successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            total:
+              type: integer
+              example: 1
+            jobs:
+              type: array
+              items:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+                    example: ff-eval-job-1
+                  model_name:
+                    type: string
+                    example: model_name
+                  status:
+                    type: string
+                    example: completed
+                  created_at:
+                    type: string
+                    format: date-time
+  '403':
+    $ref: '../../responses/403.yaml'
+  '500':
+    $ref: '../../responses/500.yaml'

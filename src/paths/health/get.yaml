@@ -18,7 +18,7 @@ responses:
               description: HTTP status code
             message:
               type: string
-              example: API is healthy
+              example: OK
               description: A message indicating the health status
           required:
             - code
