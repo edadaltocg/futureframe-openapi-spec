@@ -1,5 +1,7 @@
 .PHONY: setup test compile build preview all clean help
 
+VERSION := 0.1.0
+
 # Pull necessary Docker images
 setup:
 	docker pull redocly/cli
@@ -46,6 +48,11 @@ all: test build
 # Watch the source directory for changes and run all necessary steps
 dev:
 	fswatch -o src | xargs -n1 -I{} make all
+
+# Make a new GitHub release of the OpenAPI spec
+release:
+	gh release create v$(VERSION) openapi.yaml --title "v$(VERSION)" --notes "Release v$(VERSION)"
+	echo 'Avaliable to download at:\n https://github.com/futureframeai/ff-openapi/releases/latest/download/openapi.yaml'
 
 # Clean up the build directory
 clean:
