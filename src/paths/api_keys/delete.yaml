@@ -3,8 +3,10 @@ tags:
 summary: Delete API key
 description: Delete an API key by value
 operationId: delete_api_key
+security:
+  - BearerAuth: []
 parameters:
-  - name: id
+  - name: api_key
     in: path
     required: true
     schema:

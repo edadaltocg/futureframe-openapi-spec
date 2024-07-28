@@ -1,6 +1,7 @@
 tags:
   - Pre-trained Models
-summary: Get a list of pre-trained models
+summary: List pre-trained models
+description: Get a list of pre-trained models available for fine-tuning
 operationId: pretrained_models
 security: []
 responses:
@@ -19,13 +20,10 @@ responses:
               items:
                 type: object
                 properties:
-                  id:
+                  ff_model_id:
                     type: string
                     example: ff_zero
-                  name:
-                    type: string
-                    example: Future Frame model Zero
-                  createdAt:
+                  created_at:
                     type: string
                     format: date-time
   '400':

@@ -1,4 +1,4 @@
-openapi: 3.0.3main
+openapi: 3.0.3
 info:
   title: Future Frame API Reference
   description: The Futre Frame REST API documentation.
@@ -19,11 +19,11 @@ tags:
   - name: Pre-trained Models
     description: Endpoints for retrieving pre-trained models available for fine-tuning.
   - name: Fine-tuning
-    description: Endpoints for initiating the fine-tuning process on pre-trained models.
+    description: Endpoints for initiating and managing the fine-tuning jobs.
   - name: Evaluation
     description: Endpoints for evaluating the performance of fine-tuned models on specified datasets.
   - name: Inference
-    description: Endpoints for making predictions using fine-tuned models.
+    description: Endpoint for making predictions using fine-tuned models.
   - name: Fine-tuned Models
     description: Endpoints for accessing and managing models that have been fine-tuned.
   - name: Usage
@@ -68,15 +68,17 @@ paths:
           $ref: '#/components/responses/403'
         '500':
           $ref: '#/components/responses/500'
-  /api-keys/{id}:
+  /api-keys/{api_key}:
     delete:
       tags:
         - API Keys
       summary: Delete API key
       description: Delete an API key by value
       operationId: delete_api_key
+      security:
+        - BearerAuth: []
       parameters:
-        - name: id
+        - name: api_key
           in: path
           required: true
           schema:
@@ -111,7 +113,8 @@ paths:
     get:
       tags:
         - Pre-trained Models
-      summary: Get a list of pre-trained models
+      summary: List pre-trained models
+      description: Get a list of pre-trained models available for fine-tuning
       operationId: pretrained_models
       security: []
       responses:
@@ -130,13 +133,10 @@ paths:
                     items:
                       type: object
                       properties:
-                        id:
+                        ff_model_id:
                           type: string
                           example: ff_zero
-                        name:
-                          type: string
-                          example: Future Frame model Zero
-                        createdAt:
+                        created_at:
                           type: string
                           format: date-time
         '400':
@@ -148,8 +148,8 @@ paths:
       operationId: create_fine_tuning_job
       tags:
         - Fine-tuning
-      description: Upload a CSV file along with a model name to fine-tune the specified model
-      summary: Fine-tune a model with your training data
+      description: Upload a CSV file along with a model name to fine-tune a pre-trained model with your training data
+      summary: Fine-tune a model
       requestBody:
         required: true
         content:
@@ -188,8 +188,8 @@ paths:
                     example: model_name
                   status:
                     type: string
-                    example: pending
-                  message:
+                    example: PENDING
+                  Message:
                     type: string
                     example: Fine-tuning job created successfully
         '400':
@@ -306,7 +306,7 @@ paths:
                     example: ff-finetuning-job-1
                   status:
                     type: string
-                    example: pending
+                    example: PENDING
         '202':
           description: Fine-tuning job running
           content:
@@ -319,7 +319,7 @@ paths:
                     example: ff-finetuning-job-1
                   status:
                     type: string
-                    example: running
+                    example: RUNNING
         '403':
           $ref: '#/components/responses/403'
         '404':
@@ -369,8 +369,8 @@ paths:
                     example: model_name
                   status:
                     type: string
-                    example: pending
-                  message:
+                    example: PENDING
+                  Message:
                     type: string
                     example: Evaluation job created successfully
         '400':
@@ -479,7 +479,7 @@ paths:
                     example: ff-eval-job-1
                   status:
                     type: string
-                    example: pending
+                    example: PENDING
         '202':
           description: Evaluation job running
           content:
@@ -492,7 +492,7 @@ paths:
                     example: ff-eval-job-1
                   status:
                     type: string
-                    example: running
+                    example: RUNNING
         '403':
           $ref: '#/components/responses/403'
         '404':
@@ -504,7 +504,7 @@ paths:
       tags:
         - Inference
       description: Make predictions with fine-tuned model
-      summary: Predictions
+      summary: Make predictions
       operationId: predictions
       parameters:
         - in: path
@@ -535,26 +535,9 @@ paths:
     get:
       tags:
         - Fine-tuned Models
-      summary: Get a list of fine-tuned models
+      summary: List fine-tuned models
+      description: Get a list of fine-tuned models
       operationId: list_models
-      parameters:
-        - name: limit
-          in: query
-          description: Maximum number of models to return
-          required: false
-          schema:
-            type: integer
-            default: 10
-            minimum: 1
-            maximum: 100
-        - name: offset
-          in: query
-          description: Number of models to skip before starting to collect the result set
-          required: false
-          schema:
-            type: integer
-            default: 0
-            minimum: 0
       responses:
         '200':
           description: List of models retrieved successfully
@@ -565,18 +548,15 @@ paths:
                 properties:
                   total:
                     type: integer
-                    example: 100
+                    example: 1
                   models:
                     type: array
                     items:
                       type: object
                       properties:
-                        id:
+                        model_name:
                           type: string
-                          example: model_123456789abcdef
-                        name:
-                          type: string
-                          example: My Fine-tuned Model
+                          example: model_name
                         status:
                           type: string
                           example: completed
@@ -587,19 +567,20 @@ paths:
           $ref: '#/components/responses/403'
         '500':
           $ref: '#/components/responses/500'
-  /models/{id}:
+  /models/{model_name}:
     get:
       tags:
         - Fine-tuned Models
-      summary: Get a fine-tuned model by ID
+      summary: Fine-tuned model details
+      description: Get a fine-tuned model details by ID
       operationId: model_details
       parameters:
-        - name: id
+        - name: model_name
           in: path
           required: true
           schema:
             type: string
-            example: model_123456789abcdef
+            example: model_name
       responses:
         '200':
           description: Model retrieved successfully
@@ -608,13 +589,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: string
-                  name:
+                  model_name:
                     type: string
                   status:
                     type: string
-                  createdAt:
+                  created_at:
                     type: string
                     format: date-time
         '403':
@@ -626,15 +605,16 @@ paths:
     delete:
       tags:
         - Fine-tuned Models
-      summary: Delete a fine-tuned model by ID
+      summary: Delete fine-tuned model
+      description: Delete a fine-tuned model by ID
       operationId: delete_model
       parameters:
-        - name: id
+        - name: model_name
           in: path
           required: true
           schema:
             type: string
-            example: model_123456789abcdef
+            example: model_name
       responses:
         '204':
           description: Model deleted successfully

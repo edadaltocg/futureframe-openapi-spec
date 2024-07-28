@@ -1,7 +1,7 @@
 tags:
   - Inference
 description: Make predictions with fine-tuned model
-summary: Predictions
+summary: Make predictions
 operationId: predictions
 parameters:
   - in: path

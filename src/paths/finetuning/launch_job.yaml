@@ -1,8 +1,8 @@
 operationId: create_fine_tuning_job
 tags:
   - Fine-tuning
-description: Upload a CSV file along with a model name to fine-tune the specified model
-summary: Fine-tune a model with your training data
+description: Upload a CSV file along with a model name to fine-tune a pre-trained model with your training data
+summary: Fine-tune a model
 requestBody:
   required: true
   content:
@@ -41,8 +41,8 @@ responses:
               example: model_name
             status:
               type: string
-              example: pending
-            message:
+              example: PENDING
+            Message:
               type: string
               example: Fine-tuning job created successfully
   '400':

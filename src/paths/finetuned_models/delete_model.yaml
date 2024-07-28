@@ -1,14 +1,15 @@
 tags:
   - Fine-tuned Models
-summary: Delete a fine-tuned model by ID
+summary: Delete fine-tuned model
+description: Delete a fine-tuned model by ID
 operationId: delete_model
 parameters:
-  - name: id
+  - name: model_name
     in: path
     required: true
     schema:
       type: string
-      example: model_123456789abcdef
+      example: model_name
 responses:
   '204':
     description: Model deleted successfully

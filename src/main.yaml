@@ -1,4 +1,4 @@
-openapi: 3.0.3main
+openapi: 3.0.3
 info:
   title: Future Frame API Reference
   description: The Futre Frame REST API documentation.
@@ -18,11 +18,11 @@ tags:
   - name: Pre-trained Models
     description: Endpoints for retrieving pre-trained models available for fine-tuning.
   - name: Fine-tuning
-    description: Endpoints for initiating the fine-tuning process on pre-trained models.
+    description: Endpoints for initiating and managing the fine-tuning jobs.
   - name: Evaluation
     description: Endpoints for evaluating the performance of fine-tuned models on specified datasets.
   - name: Inference
-    description: Endpoints for making predictions using fine-tuned models.
+    description: Endpoint for making predictions using fine-tuned models.
   - name: Fine-tuned Models
     description: Endpoints for accessing and managing models that have been fine-tuned.
   - name: Usage
@@ -35,7 +35,7 @@ paths:
   /api-keys:
     post:
       $ref: "./paths/api_keys/create.yaml"
-  /api-keys/{id}:
+  /api-keys/{api_key}:
     delete:
       $ref: "./paths/api_keys/delete.yaml"
   /pretrained-models:
@@ -66,7 +66,7 @@ paths:
   /models:
     get:
       $ref: "./paths/finetuned_models/list.yaml"
-  /models/{id}:
+  /models/{model_name}:
     get:
       $ref: "./paths/finetuned_models/model_details.yaml"
     delete:

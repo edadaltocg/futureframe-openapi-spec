@@ -1,14 +1,15 @@
 tags:
   - Fine-tuned Models
-summary: Get a fine-tuned model by ID
+summary: Fine-tuned model details
+description: Get a fine-tuned model details by ID
 operationId: model_details
 parameters:
-  - name: id
+  - name: model_name
     in: path
     required: true
     schema:
       type: string
-      example: model_123456789abcdef
+      example: model_name
 responses:
   '200':
     description: Model retrieved successfully
@@ -17,13 +18,11 @@ responses:
         schema:
           type: object
           properties:
-            id:
-              type: string
-            name:
+            model_name:
               type: string
             status:
               type: string
-            createdAt:
+            created_at:
               type: string
               format: date-time
   '403':

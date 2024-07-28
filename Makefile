@@ -1,6 +1,6 @@
 .PHONY: setup test compile build preview all clean help
 
-VERSION := 0.1.3
+VERSION := 0.1.4
 
 # Pull necessary Docker images
 setup:

@@ -39,8 +39,8 @@ responses:
               example: model_name
             status:
               type: string
-              example: pending
-            message:
+              example: PENDING
+            Message:
               type: string
               example: Evaluation job created successfully
   '400':
