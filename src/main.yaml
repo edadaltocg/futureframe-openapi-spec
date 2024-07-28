@@ -2,11 +2,10 @@ openapi: 3.0.3
 info:
   title: Future Frame API
   description: The Futre Frame REST API documentation.
-  version: "0.1.0"
-  termsOfService: https://futureframe.ai/policies/terms-of-use
+  version: "0.1.1"
+  # termsOfService: https://futureframe.ai/policies/terms-of-use
   contact:
     name: Future Frame Support
-    url: https://futureframe.ai/contact
     email: support@futureframe.ai
   license:
     name: MIT
@@ -32,7 +31,6 @@ tags:
     description: Details
 security:
   - ApiKeyAuth: []
-  - BearerAuth: []
 paths:
   /api-keys:
     post:
@@ -43,12 +41,15 @@ paths:
   /pretrained-models:
     get:
       $ref: "./paths/pretrained_models/list.yaml"
-  /pretrained-models/{id}:
-    get:
-      $ref: "./paths/pretrained_models/model_details.yaml"
+  # /pretrained-models/{id}:
+  #   get:
+  #     $ref: "./paths/pretrained_models/model_details.yaml"
   /finetuning:
     post:
       $ref: "./paths/finetuning/launch_job.yaml"
+  /finetuning/{id}:
+    get:
+      $ref: "./paths/finetuning/results.yaml"
   /evaluation:
     post:
       $ref: "./paths/evaluation/run.yaml"
@@ -75,7 +76,5 @@ paths:
 components:
   responses:
     $ref: "./responses/index.yaml"
-  schemas:
-    $ref: "./schemas/index.yaml"
   securitySchemes:
     $ref: "./schemas/security.yaml"

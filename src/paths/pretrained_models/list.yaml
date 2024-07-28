@@ -1,6 +1,8 @@
 tags:
   - Pre-trained Models
 summary: Get a list of pre-trained models
+operationId: pretrained_models
+security: []
 parameters:
   - name: limit
     in: query
@@ -29,7 +31,7 @@ responses:
           properties:
             total:
               type: integer
-              example: 100
+              example: 1
             models:
               type: array
               items:
@@ -37,15 +39,14 @@ responses:
                 properties:
                   id:
                     type: string
-                    example: model_123456789abcdef
+                    example: ff_zero
                   name:
                     type: string
-                    example: My Fine-tuned Model
-                  status:
-                    type: string
-                    example: completed
+                    example: Future Frame model Zero
                   createdAt:
                     type: string
                     format: date-time
   '400':
-    description: Bad request
+    $ref: '../../responses/400.yaml'
+  '500':
+    $ref: '../../responses/500.yaml'

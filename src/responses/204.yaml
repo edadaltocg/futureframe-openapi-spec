@@ -1,5 +1,0 @@
-description: The resource was deleted successfully
-content:
-  application/json:
-    schema:
-      $ref: "../schemas/success.yaml"

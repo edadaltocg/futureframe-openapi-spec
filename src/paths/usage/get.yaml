@@ -1,6 +1,7 @@
 tags:
   - Usage
 summary: Get usage information
+operationId: usage
 responses:
   '200':
     description: Usage information retrieved successfully
@@ -15,5 +16,7 @@ responses:
             used_credits:
               type: integer
               example: 150
-  '401':
-    description: Unauthorized
+  '403':
+    $ref: '../../responses/403.yaml'
+  '500':
+    $ref: '../../responses/500.yaml'

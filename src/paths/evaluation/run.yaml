@@ -2,15 +2,22 @@ tags:
   - Evaluation
 operationId: evaluate
 summary: Evaluate a fine-tuned model
-description: Start a new evaluation.
+description: Start a new evaluation
 requestBody:
   required: true
   content:
-    application/json:
+    multipart/form-data:
       schema:
         type: object
+        required:
+          - file
+          - model_id
         properties:
-          modelId:
+          file:
+            type: string
+            format: binary
+            description: The CSV file containing the evaluation data
+          model_id:
             type: string
             description: ID of the model to fine-tune
             example: model_123
@@ -22,14 +29,12 @@ responses:
         schema:
           type: object
           properties:
-            jobId:
+            job_id:
               type: string
               description: ID of the created job
-              example: job_789
+              example: ff-job_789
   '400':
     $ref: '../../responses/400.yaml'
-  '401':
-    $ref: '../../responses/401.yaml'
   '403':
     $ref: '../../responses/403.yaml'
   '404':

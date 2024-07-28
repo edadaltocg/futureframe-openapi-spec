@@ -1,7 +1,5 @@
 BadRequest:
   $ref: "./400.yaml"
-UnauthorizedError:
-  $ref: "./401.yaml"
 ForbiddenError:
   $ref: "./403.yaml"
 NotFoundError:

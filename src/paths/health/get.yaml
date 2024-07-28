@@ -1,10 +1,12 @@
 summary: Check API Health
-description: Returns the health status of the API.
+description: Returns the health status of the API
+operationId: health
+security: []
 tags:
   - Health
 responses:
   '200':
-    description: Successful response indicating the API is healthy.
+    description: Successful response indicating the API is healthy
     content:
       application/json:
         schema:
@@ -21,5 +23,5 @@ responses:
           required:
             - code
             - message
-  '400':
-    description: Bad request
+  '500':
+    $ref: '../../responses/500.yaml'

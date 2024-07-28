@@ -2,4 +2,16 @@ description: Invalid input parameters
 content:
   application/json:
     schema:
-      $ref: "../schemas/error.yaml"
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 400
+          description: HTTP status code
+        message:
+          type: string
+          example: Bad request
+          description: A message indicating the error
+      required:
+        - code
+        - message

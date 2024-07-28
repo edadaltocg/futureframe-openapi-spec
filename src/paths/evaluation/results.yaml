@@ -1,6 +1,7 @@
 tags:
   - Evaluation
 summary: Get evaluation results by ID
+operationId: evaluarion_results
 security:
   - ApiKeyAuth: []
   - BearerAuth: []
@@ -22,7 +23,7 @@ responses:
           properties:
             id:
               type: string
-              example: eval_123456789abcdef
+              example: ff-eval-123456789abcdef
             status:
               type: string
               example: completed
@@ -51,5 +52,9 @@ responses:
                     type: number
                     format: float
                     example: 0.85
+  '403':
+    $ref: '../../responses/403.yaml'
   '404':
-    description: Evaluation not found
+    $ref: '../../responses/404.yaml'
+  '500':
+    $ref: '../../responses/500.yaml'

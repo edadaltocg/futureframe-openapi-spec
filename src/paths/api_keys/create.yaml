@@ -1,6 +1,9 @@
 tags:
   - API Keys
 summary: Create a new API key
+operationId: create_api_key
+security:
+  - BearerAuth: []
 requestBody:
   description: Details for the new API key
   required: true
@@ -11,7 +14,7 @@ requestBody:
         properties:
           name:
             type: string
-            example: My API Key
+            example: Production API Key
 responses:
   '201':
     description: API key created successfully
@@ -20,8 +23,12 @@ responses:
         schema:
           type: object
           properties:
-            apiKey:
+            api_key:
               type: string
-              example: 123456789abcdef
+              example: ff-c0b5011f-2d84-4002-b153-2287b7ca1e94
   '400':
-    description: Bad request
+    $ref: '../../responses/400.yaml'
+  '403':
+    $ref: '../../responses/403.yaml'
+  '500':
+    $ref: '../../responses/500.yaml'

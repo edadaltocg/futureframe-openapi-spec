@@ -1,31 +1,25 @@
 operationId: createFineTuningJob
 tags:
   - Fine-tuning
-summary: Launch a fine-tuning job
-description: Start a new fine-tuning job with the specified parameters.
+description: Upload a CSV file along with a model name to fine-tune the specified model
+summary: Fine-tune a model with your training data
 requestBody:
   required: true
   content:
-    application/json:
+    multipart/form-data:
       schema:
         type: object
+        required:
+          - file
+          - model_name
         properties:
-          modelId:
+          file:
             type: string
-            description: ID of the model to fine-tune
-            example: model_123
-          datasetId:
+            format: binary
+            description: The CSV file containing the training data.
+          model_name:
             type: string
-            description: ID of the dataset to use for fine-tuning
-            example: dataset_456
-          hyperparameters:
-            type: object
-            description: Hyperparameters for the fine-tuning job
-            additionalProperties:
-              type: string
-            example:
-              learningRate: "0.001"
-              batchSize: "32"
+            description: The name of the model to be available for inference.
 responses:
   '201':
     description: Fine-tuning job started successfully
@@ -34,17 +28,16 @@ responses:
         schema:
           type: object
           properties:
-            jobId:
+            job_id:
               type: string
               description: ID of the created job
-              example: job_789
+              example: ff-finetuning-job-1
+            message:
+              type: string
+              example: Model fine-tuning started successfully.
   '400':
     $ref: '../../responses/400.yaml'
-  '401':
-    $ref: '../../responses/401.yaml'
   '403':
     $ref: '../../responses/403.yaml'
-  '404':
-    $ref: '../../responses/404.yaml'
   '500':
     $ref: '../../responses/500.yaml'

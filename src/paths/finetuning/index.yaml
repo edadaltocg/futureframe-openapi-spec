@@ -1,2 +1,0 @@
-/finetuning:
-  $ref: "./launch_job.yaml"

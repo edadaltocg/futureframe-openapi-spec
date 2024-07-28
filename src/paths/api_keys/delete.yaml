@@ -1,15 +1,36 @@
 tags:
   - API Keys
-summary: Delete an API key by ID
+summary: Delete an API key by value
+operationId: delete_api_key
 parameters:
   - name: id
     in: path
     required: true
     schema:
       type: string
-      example: 123456789abcdef
+      example: ff-c0b5011f-2d84-4002-b153-2287b7ca1e94
 responses:
   '204':
     description: API key deleted successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: integer
+              example: 204
+              description: HTTP status code
+            message:
+              type: string
+              example: API key deleted successfully
+              description: Success message
+  '403':
+    $ref: '../../responses/403.yaml'
   '404':
-    description: API key not found
+    $ref: '../../responses/404.yaml'
+  '500':
+    $ref: '../../responses/500.yaml'

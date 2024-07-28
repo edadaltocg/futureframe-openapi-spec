@@ -1,6 +1,7 @@
 tags:
   - Fine-tuned Models
 summary: Delete a fine-tuned model by ID
+operationId: delete_model
 parameters:
   - name: id
     in: path
@@ -11,5 +12,25 @@ parameters:
 responses:
   '204':
     description: Model deleted successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: integer
+              example: 204
+              description: HTTP status code
+            message:
+              type: string
+              example: Model deleted successfully
+              description: Success message
+  '403':
+    $ref: '../../responses/403.yaml'
   '404':
-    description: Model not found
+    $ref: '../../responses/404.yaml'
+  '500':
+    $ref: '../../responses/500.yaml'

@@ -1,6 +1,7 @@
 tags:
   - Fine-tuned Models
 summary: Get a fine-tuned model by ID
+operationId: model_details
 parameters:
   - name: id
     in: path
@@ -25,5 +26,9 @@ responses:
             createdAt:
               type: string
               format: date-time
+  '403':
+    $ref: '../../responses/403.yaml'
   '404':
-    description: Model not found
+    $ref: '../../responses/404.yaml'
+  '500':
+    $ref: '../../responses/500.yaml'

@@ -1,5 +1,0 @@
-description: Authentication information is missing or invalid
-content:
-  application/json:
-    schema:
-      $ref: "../schemas/error.yaml"

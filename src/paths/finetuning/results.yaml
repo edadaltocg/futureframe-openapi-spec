@@ -1,0 +1,52 @@
+tags:
+  - Fine-tuning
+summary: Check fine-tuning job status
+description: Retrieve the status of a specific fine-tuning job
+operationId: finetuning_results
+parameters:
+  - name: id
+    in: path
+    required: true
+    description: ID of the job to check
+    schema:
+      type: string
+      example: ff-job-789
+responses:
+  '200':
+    description: fine-tuning results retrieved successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+              example: eval_123456789abcdef
+            status:
+              type: string
+              example: completed
+            result:
+              type: object
+              properties:
+                accuracy:
+                  type: number
+                  format: float
+                  example: 0.95
+                precision:
+                  type: number
+                  format: float
+                  example: 0.92
+                recall:
+                  type: number
+                  format: float
+                  example: 0.90
+                f1_score:
+                  type: number
+                  format: float
+                  example: 0.91
+  '403':
+    $ref: '../../responses/403.yaml'
+  '404':
+    $ref: '../../responses/404.yaml'
+  '500':
+    $ref: '../../responses/500.yaml'
