@@ -2,11 +2,9 @@ openapi: 3.0.3
 info:
   title: Future Frame API
   description: The Futre Frame REST API documentation.
-  version: 0.1.0
-  termsOfService: https://futureframe.ai/policies/terms-of-use
+  version: 0.1.1
   contact:
     name: Future Frame Support
-    url: https://futureframe.ai/contact
     email: support@futureframe.ai
   license:
     name: MIT
@@ -15,7 +13,6 @@ servers:
   - url: https://futureframe.ai/api
 security:
   - ApiKeyAuth: []
-  - BearerAuth: []
 tags:
   - name: API Keys
     description: Details
@@ -39,6 +36,9 @@ paths:
       tags:
         - API Keys
       summary: Create a new API key
+      operationId: create_api_key
+      security:
+        - BearerAuth: []
       requestBody:
         description: Details for the new API key
         required: true
@@ -49,7 +49,7 @@ paths:
               properties:
                 name:
                   type: string
-                  example: My API Key
+                  example: Production API Key
       responses:
         '201':
           description: API key created successfully
@@ -58,33 +58,60 @@ paths:
               schema:
                 type: object
                 properties:
-                  apiKey:
+                  api_key:
                     type: string
-                    example: 123456789abcdef
+                    example: ff-c0b5011f-2d84-4002-b153-2287b7ca1e94
         '400':
-          description: Bad request
+          $ref: '#/components/responses/400'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
   /api-keys/{id}:
     delete:
       tags:
         - API Keys
-      summary: Delete an API key by ID
+      summary: Delete an API key by value
+      operationId: delete_api_key
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: string
-            example: 123456789abcdef
+            example: ff-c0b5011f-2d84-4002-b153-2287b7ca1e94
       responses:
         '204':
           description: API key deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    type: integer
+                    example: 204
+                    description: HTTP status code
+                  message:
+                    type: string
+                    example: API key deleted successfully
+                    description: Success message
+        '403':
+          $ref: '#/components/responses/403'
         '404':
-          description: API key not found
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
   /pretrained-models:
     get:
       tags:
         - Pre-trained Models
       summary: Get a list of pre-trained models
+      operationId: pretrained_models
+      security: []
       parameters:
         - name: limit
           in: query
@@ -113,7 +140,7 @@ paths:
                 properties:
                   total:
                     type: integer
-                    example: 100
+                    example: 1
                   models:
                     type: array
                     items:
@@ -121,79 +148,41 @@ paths:
                       properties:
                         id:
                           type: string
-                          example: model_123456789abcdef
+                          example: ff_zero
                         name:
                           type: string
-                          example: My Fine-tuned Model
-                        status:
-                          type: string
-                          example: completed
+                          example: Future Frame model Zero
                         createdAt:
                           type: string
                           format: date-time
         '400':
-          description: Bad request
-  /pretrained-models/{id}:
-    get:
-      tags:
-        - Pre-trained Models
-      summary: Get a pretrained model by ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: model_123456789abcdef
-      responses:
-        '200':
-          description: Model retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  name:
-                    type: string
-                  status:
-                    type: string
-                  createdAt:
-                    type: string
-                    format: date-time
-        '404':
-          description: Model not found
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
   /finetuning:
     post:
       operationId: createFineTuningJob
       tags:
         - Fine-tuning
-      summary: Launch a fine-tuning job
-      description: Start a new fine-tuning job with the specified parameters.
+      description: Upload a CSV file along with a model name to fine-tune the specified model
+      summary: Fine-tune a model with your training data
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
+              required:
+                - file
+                - model_name
               properties:
-                modelId:
+                file:
                   type: string
-                  description: ID of the model to fine-tune
-                  example: model_123
-                datasetId:
+                  format: binary
+                  description: The CSV file containing the training data.
+                model_name:
                   type: string
-                  description: ID of the dataset to use for fine-tuning
-                  example: dataset_456
-                hyperparameters:
-                  type: object
-                  description: Hyperparameters for the fine-tuning job
-                  additionalProperties:
-                    type: string
-                  example:
-                    learningRate: '0.001'
-                    batchSize: '32'
+                  description: The name of the model to be available for inference.
       responses:
         '201':
           description: Fine-tuning job started successfully
@@ -202,79 +191,37 @@ paths:
               schema:
                 type: object
                 properties:
-                  jobId:
+                  job_id:
                     type: string
                     description: ID of the created job
-                    example: job_789
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-        '500':
-          $ref: '#/components/responses/500'
-  /evaluation:
-    post:
-      tags:
-        - Evaluation
-      operationId: evaluate
-      summary: Evaluate a fine-tuned model
-      description: Start a new evaluation.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                modelId:
-                  type: string
-                  description: ID of the model to fine-tune
-                  example: model_123
-      responses:
-        '200':
-          description: Evaluation running
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  jobId:
+                    example: ff-finetuning-job-1
+                  message:
                     type: string
-                    description: ID of the created job
-                    example: job_789
+                    example: Model fine-tuning started successfully.
         '400':
           $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
         '500':
           $ref: '#/components/responses/500'
-  /evaluation/{id}:
+  /finetuning/{id}:
     get:
       tags:
-        - Evaluation
-      summary: Get evaluation results by ID
-      security:
-        - ApiKeyAuth: []
-        - BearerAuth: []
+        - Fine-tuning
+      summary: Check fine-tuning job status
+      description: Retrieve the status of a specific fine-tuning job
+      operationId: finetuning_results
       parameters:
         - name: id
           in: path
-          description: ID of the evaluation
           required: true
+          description: ID of the job to check
           schema:
             type: string
-            example: eval_123456789abcdef
+            example: ff-job-789
       responses:
         '200':
-          description: Evaluation results retrieved successfully
+          description: fine-tuning results retrieved successfully
           content:
             application/json:
               schema:
@@ -305,55 +252,157 @@ paths:
                         type: number
                         format: float
                         example: 0.91
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+  /evaluation:
+    post:
+      tags:
+        - Evaluation
+      operationId: evaluate
+      summary: Evaluate a fine-tuned model
+      description: Start a new evaluation
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - model_id
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The CSV file containing the evaluation data
+                model_id:
+                  type: string
+                  description: ID of the model to fine-tune
+                  example: model_123
+      responses:
+        '200':
+          description: Evaluation running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+                    description: ID of the created job
+                    example: ff-job_789
+        '400':
+          $ref: '#/components/responses/400'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+  /evaluation/{id}:
+    get:
+      tags:
+        - Evaluation
+      summary: Get evaluation results by ID
+      operationId: evaluarion_results
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of the evaluation
+          required: true
+          schema:
+            type: string
+            example: eval_123456789abcdef
+      responses:
+        '200':
+          description: Evaluation results retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: ff-eval-123456789abcdef
+                  status:
+                    type: string
+                    example: completed
+                  result:
+                    type: object
+                    properties:
+                      accuracy:
+                        type: number
+                        format: float
+                        example: 0.95
+                      precision:
+                        type: number
+                        format: float
+                        example: 0.92
+                      recall:
+                        type: number
+                        format: float
+                        example: 0.9
+                      f1_score:
+                        type: number
+                        format: float
+                        example: 0.91
                       additional_metrics:
                         type: object
                         additionalProperties:
                           type: number
                           format: float
                           example: 0.85
-        '404':
-          description: Evaluation not found
-  /inference/{model_name}:
-    post:
-      tags:
-        - Inference
-      description: Predictions entry point to get inference using default model version.
-      summary: Predictions entry point to get inference using default model version.
-      operationId: predictions
-      parameters:
-        - in: path
-          name: model_name
-          description: Name of model.
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Input data format is defined by each model.
-        content:
-          '*/*':
-            schema:
-              type: string
-              format: binary
-        required: true
-      responses:
-        '200':
-          description: Output data format is defined by each model.
-          content:
-            '*/*':
-              schema:
-                type: string
-                format: binary
+        '403':
+          $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
         '500':
           $ref: '#/components/responses/500'
-        '503':
-          $ref: '#/components/responses/503'
+  /inference/{model_name}:
+    post:
+      tags:
+        - Inference
+      description: Make predictions with fine-tuned model
+      summary: Predictions
+      operationId: predictions
+      parameters:
+        - in: path
+          name: model_name
+          description: Name of model
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Input data format is defined by each model
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        '200':
+          description: Output data format is defined by each model
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
   /models:
     get:
       tags:
         - Fine-tuned Models
       summary: Get a list of fine-tuned models
+      operationId: list_models
       parameters:
         - name: limit
           in: query
@@ -397,16 +446,19 @@ paths:
                         status:
                           type: string
                           example: completed
-                        createdAt:
+                        created_at:
                           type: string
                           format: date-time
-        '400':
-          description: Bad request
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
   /models/{id}:
     get:
       tags:
         - Fine-tuned Models
       summary: Get a fine-tuned model by ID
+      operationId: model_details
       parameters:
         - name: id
           in: path
@@ -431,12 +483,17 @@ paths:
                   createdAt:
                     type: string
                     format: date-time
+        '403':
+          $ref: '#/components/responses/403'
         '404':
-          description: Model not found
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
     delete:
       tags:
         - Fine-tuned Models
       summary: Delete a fine-tuned model by ID
+      operationId: delete_model
       parameters:
         - name: id
           in: path
@@ -447,13 +504,34 @@ paths:
       responses:
         '204':
           description: Model deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    type: integer
+                    example: 204
+                    description: HTTP status code
+                  message:
+                    type: string
+                    example: Model deleted successfully
+                    description: Success message
+        '403':
+          $ref: '#/components/responses/403'
         '404':
-          description: Model not found
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
   /usage:
     get:
       tags:
         - Usage
       summary: Get usage information
+      operationId: usage
       responses:
         '200':
           description: Usage information retrieved successfully
@@ -468,17 +546,21 @@ paths:
                   used_credits:
                     type: integer
                     example: 150
-        '401':
-          description: Unauthorized
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
   /health:
     get:
       summary: Check API Health
-      description: Returns the health status of the API.
+      description: Returns the health status of the API
+      operationId: health
+      security: []
       tags:
         - Health
       responses:
         '200':
-          description: Successful response indicating the API is healthy.
+          description: Successful response indicating the API is healthy
           content:
             application/json:
               schema:
@@ -495,8 +577,8 @@ paths:
                 required:
                   - code
                   - message
-        '400':
-          description: Bad request
+        '500':
+          $ref: '#/components/responses/500'
 components:
   responses:
     '400':
@@ -504,64 +586,81 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/error'
-    '401':
-      description: Authentication information is missing or invalid
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 400
+                description: HTTP status code
+              message:
+                type: string
+                example: Bad request
+                description: A message indicating the error
+            required:
+              - code
+              - message
     '403':
       description: Access forbidden
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/error'
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 403
+                description: HTTP status code
+              message:
+                type: string
+                example: Unauthorized
+                description: A message indicating the error
+            required:
+              - code
+              - message
     '404':
       description: Resource not found
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/error'
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 404
+                description: HTTP status code
+              message:
+                type: string
+                example: Resource not found
+                description: A message indicating the error
+            required:
+              - code
+              - message
     '500':
       description: Internal server error
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/error'
-    '503':
-      description: No worker is available to serve request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 500
+                description: HTTP status code
+              message:
+                type: string
+                example: Internal server error
+                description: A message indicating the error
+            required:
+              - code
+              - message
     BadRequest:
       $ref: '#/components/responses/400'
-    UnauthorizedError:
-      $ref: '#/components/responses/401'
     ForbiddenError:
       $ref: '#/components/responses/403'
     NotFoundError:
       $ref: '#/components/responses/404'
     UnexpectedError:
       $ref: '#/components/responses/500'
-  schemas:
-    error:
-      type: object
-      properties:
-        code:
-          type: integer
-          example: 500
-          description: HTTP status code
-        message:
-          type: string
-          example: Internal server error
-          description: A message indicating the error
-      required:
-        - code
-        - message
-    Error:
-      $ref: '#/components/schemas/error'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
